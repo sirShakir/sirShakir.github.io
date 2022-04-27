@@ -1,0 +1,15 @@
+{
+    "dir": "ltr",
+    "lang": "en",
+    "name": "StickVsZombie",
+    "display": "standalone",
+    "start_url": "https://zeyeland.com/stickvszombie/",
+    "short_name": "sVz",
+    "theme_color": "transparent",
+    "description": "stickman game",
+    "orientation": "landscape",
+    "background_color": "transparent",
+    "related_applications": [],
+    "prefer_related_applications": false,
+    "icons": []
+}

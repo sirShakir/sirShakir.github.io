@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Stickman vs Zombies</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1, user-scalable=0">
+        <link rel="apple-touch-icon-precomposed" href="favicon.ico">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link href="index.css" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<link rel="manifest" href="manifest.json"></link>
+
+</head>
+<body>
+
+<div id="pageContainer">
+
+    <main id="main">
+    <img src="projectAssets/dPad/upKeyMoblie.png" onclick="moveUP()" id="buttonUP" >
+    <img src="projectAssets/dPad/leftKeyMoblie.png" onclick="moveLEFT()" id="buttonLEFT" >
+    <img src="projectAssets/dPad/rightKeyMoblie.png" onclick="moveRIGHT()"id="buttonRIGHT" >
+    <img src="projectAssets/dPad/centerKey.png" onclick="moveSHOOT()"id="buttonCENTER" >
+    <canvas id="gameCanvas"></canvas>
+    </main>
+
+    
+
+
+</div>
+
+<script src="canvas.js" ></script>
+<script src="player1.js" ></script>
+<script src="js/walkingDead/zombie.js" ></script>
+<script src="js/carePackage/ammo.js" ></script>
+<script src="js/carePackage/health.js" ></script>
+<script src="js/carePackage/nuke.js" ></script>
+<script src="js/carePackage/carePackage.js" ></script>
+<script src="js/bullets.js" ></script>
+
+<script src="js/settings/settings.js" ></script>
+<script src="js/settings/mainMenu.js" ></script>
+<script src="js/settings/winnerORlosser.js" ></script>
+<script src="js/settings/gameListener.js" ></script>
+<script src="game.js" ></script>
+<script src="controls.js" ></script>
+<script src="controlsmobile.js" ></script>
+<script src="pwabuilder-sw.js"></script>
+<script src="service-worker.js"></script>
+<script src="manup.js"></script>
+</body>
+</html>
