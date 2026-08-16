@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Ports Study Tool</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #0b1120;
+        color: #e5e7eb;
+    }
+
+    header {
+        background: #111827;
+        border-bottom: 1px solid #263244;
+        padding: 20px;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    header h1 {
+        margin: 0 0 5px;
+        font-size: 26px;
+    }
+
+    header p {
+        margin: 0;
+        color: #94a3b8;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    /* Navigation */
+
+    .tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .tab {
+        border: 1px solid #334155;
+        background: #111827;
+        color: #cbd5e1;
+        padding: 10px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .tab:hover,
+    .tab.active {
+        background: #2563eb;
+        color: white;
+        border-color: #2563eb;
+    }
+
+    /* Controls */
+
+    .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    input,
+    select,
+    button {
+        font: inherit;
+    }
+
+    #search {
+        flex: 1;
+        min-width: 220px;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #111827;
+        color: white;
+        outline: none;
+    }
+
+    select {
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #111827;
+        color: white;
+    }
+
+    .button {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .button:hover {
+        background: #1d4ed8;
+    }
+
+    .button.secondary {
+        background: #334155;
+    }
+
+    .button.success {
+        background: #15803d;
+    }
+
+    .button.danger {
+        background: #b91c1c;
+    }
+
+    /* Stats */
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .stat {
+        background: #111827;
+        border: 1px solid #263244;
+        border-radius: 10px;
+        padding: 15px;
+    }
+
+    .stat-number {
+        font-size: 26px;
+        font-weight: bold;
+        color: #60a5fa;
+    }
+
+    .stat-label {
+        color: #94a3b8;
+        font-size: 13px;
+        margin-top: 4px;
+    }
+
+    /* Table */
+
+    .table-wrapper {
+        overflow-x: auto;
+        border: 1px solid #263244;
+        border-radius: 10px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #111827;
+    }
+
+    th {
+        text-align: left;
+        padding: 13px;
+        background: #1e293b;
+        color: #93c5fd;
+        position: sticky;
+        top: 0;
+    }
+
+    td {
+        padding: 12px;
+        border-top: 1px solid #263244;
+        vertical-align: top;
+    }
+
+    tr:hover {
+        background: #172033;
+    }
+
+    .port {
+        color: #60a5fa;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .protocol {
+        color: #f8fafc;
+        font-weight: bold;
+    }
+
+    .transport {
+        color: #fbbf24;
+        font-weight: bold;
+    }
+
+    .category-title {
+        margin: 25px 0 10px;
+        color: #93c5fd;
+    }
+
+    .known {
+        opacity: 0.45;
+    }
+
+    .known td:first-child::before {
+        content: "✓ ";
+        color: #4ade80;
+    }
+
+    .mark-btn {
+        padding: 6px 10px;
+        border: 1px solid #475569;
+        border-radius: 6px;
+        background: transparent;
+        color: #cbd5e1;
+        cursor: pointer;
+    }
+
+    .mark-btn:hover {
+        background: #334155;
+    }
+
+    /* Flashcards */
+
+    .flashcard-area {
+        max-width: 750px;
+        margin: 30px auto;
+        text-align: center;
+    }
+
+    .flashcard {
+        min-height: 350px;
+        background: #111827;
+        border: 1px solid #334155;
+        border-radius: 18px;
+        padding: 50px 30px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .flashcard-label {
+        color: #64748b;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 2px;
+    }
+
+    .flashcard-main {
+        font-size: 50px;
+        font-weight: bold;
+        color: #60a5fa;
+        margin: 20px 0;
+    }
+
+    .flashcard-answer {
+        font-size: 25px;
+        color: #f8fafc;
+        margin: 10px;
+    }
+
+    .flashcard-hint {
+        color: #64748b;
+        margin-top: 20px;
+    }
+
+    .flash-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+    }
+
+    /* Quiz */
+
+    .quiz {
+        max-width: 800px;
+        margin: 30px auto;
+    }
+
+    .quiz-card {
+        background: #111827;
+        border: 1px solid #334155;
+        border-radius: 15px;
+        padding: 30px;
+    }
+
+    .question-number {
+        color: #64748b;
+        margin-bottom: 10px;
+    }
+
+    .question {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 25px;
+    }
+
+    .answers {
+        display: grid;
+        gap: 10px;
+    }
+
+    .answer {
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #172033;
+        color: #e5e7eb;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .answer:hover {
+        background: #26344d;
+    }
+
+    .answer.correct {
+        background: #14532d;
+        border-color: #22c55e;
+    }
+
+    .answer.wrong {
+        background: #7f1d1d;
+        border-color: #ef4444;
+    }
+
+    .quiz-score {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    /* Hide */
+
+    .hidden {
+        display: none !important;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 800px) {
+        .stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        th,
+        td {
+            font-size: 13px;
+        }
+
+        .flashcard-main {
+            font-size: 38px;
+        }
+    }
+
+    @media (max-width: 500px) {
+        .stats {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .container {
+            padding: 12px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🔐 Network Ports Study Tool</h1>
+    <p>CompTIA Security+ / Networking Port Reference</p>
+</header>
+
+<div class="container">
+
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('reference')">
+            📚 Reference
+        </button>
+
+        <button class="tab" onclick="showTab('flashcards')">
+            🃏 Flashcards
+        </button>
+
+        <button class="tab" onclick="showTab('quiz')">
+            🧠 Quiz
+        </button>
+    </div>
+
+    <!-- ================= REFERENCE ================= -->
+
+    <section id="reference">
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="totalPorts">0</div>
+                <div class="stat-label">Total Ports</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-number" id="visiblePorts">0</div>
+                <div class="stat-label">Showing</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-number" id="knownPorts">0</div>
+                <div class="stat-label">Marked Known</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-number" id="remainingPorts">0</div>
+                <div class="stat-label">To Study</div>
+            </div>
+        </div>
+
+        <div class="controls">
+
+            <input
+                id="search"
+                type="text"
+                placeholder="Search port, protocol, transport, or description..."
+                oninput="renderTable()"
+            >
+
+            <select id="categoryFilter" onchange="renderTable()">
+                <option value="all">All Categories</option>
+            </select>
+
+            <select id="transportFilter" onchange="renderTable()">
+                <option value="all">TCP / UDP</option>
+                <option value="TCP">TCP</option>
+                <option value="UDP">UDP</option>
+            </select>
+
+            <button class="button secondary" onclick="clearFilters()">
+                Clear
+            </button>
+
+            <button class="button danger" onclick="resetProgress()">
+                Reset Progress
+            </button>
+
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Port</th>
+                        <th>Protocol / Service</th>
+                        <th>Transport</th>
+                        <th>Description / Exam Tip</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="portTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= FLASHCARDS ================= -->
+
+    <section id="flashcards" class="hidden">
+
+        <div class="flashcard-area">
+
+            <div class="flashcard" onclick="flipCard()">
+
+                <div class="flashcard-label">
+                    Port
+                </div>
+
+                <div class="flashcard-main" id="cardPort">
+                    20
+                </div>
+
+                <div
+                    class="flashcard-answer hidden"
+                    id="cardAnswer">
+                </div>
+
+                <div
+                    class="flashcard-hint"
+                    id="cardHint">
+                    Click the card to reveal the answer
+                </div>
+
+            </div>
+
+            <div class="flash-buttons">
+
+                <button class="button" onclick="previousCard()">
+                    ← Previous
+                </button>
+
+                <button class="button secondary" onclick="randomCard()">
+                    🔀 Random
+                </button>
+
+                <button class="button" onclick="nextCard()">
+                    Next →
+                </button>
+
+            </div>
+
+            <p id="cardCounter"></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ================= QUIZ ================= -->
+
+    <section id="quiz" class="hidden">
+
+        <div class="quiz">
+
+            <div class="quiz-card">
+
+                <div class="quiz-score" id="quizScore">
+                    Score: 0 / 0
+                </div>
+
+                <div class="question-number" id="questionNumber">
+                    Question 1
+                </div>
+
+                <div class="question" id="question">
+                    Loading...
+                </div>
+
+                <div class="answers" id="answers"></div>
+
+                <br>
+
+                <button
+                    id="nextQuestionBtn"
+                    class="button hidden"
+                    onclick="nextQuestion()">
+                    Next Question →
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   PORT DATABASE
+========================================================= */
+
+const ports = [
+
+/* Basic File Transfer & Management */
+
+{
+    port: 20,
+    protocol: "FTP (Data)",
+    transport: "TCP",
+    category: "Basic File Transfer & Management",
+    description: "Transfers actual file content in active mode."
+},
+
+{
+    port: 21,
+    protocol: "FTP (Control)",
+    transport: "TCP",
+    category: "Basic File Transfer & Management",
+    description: "Handles commands, authentication, and directory listings."
+},
+
+{
+    port: 22,
+    protocol: "SSH / SFTP",
+    transport: "TCP",
+    category: "Basic File Transfer & Management",
+    description: "Encrypted terminal access and secure file transfer."
+},
+
+{
+    port: 23,
+    protocol: "Telnet",
+    transport: "TCP",
+    category: "Basic File Transfer & Management",
+    description: "Legacy unencrypted remote terminal access (cleartext)."
+},
+
+{
+    port: 69,
+    protocol: "TFTP",
+    transport: "UDP",
+    category: "Basic File Transfer & Management",
+    description: "Trivial FTP; lightweight, unauthenticated UDP file transfer."
+},
+
+{
+    port: 989,
+    protocol: "FTPS (Data)",
+    transport: "TCP / UDP",
+    category: "Basic File Transfer & Management",
+    description: "FTP over SSL/TLS for data channel."
+},
+
+{
+    port: 990,
+    protocol: "FTPS (Control)",
+    transport: "TCP / UDP",
+    category: "Basic File Transfer & Management",
+    description: "FTP over SSL/TLS for control channel."
+},
+
+/* Web & Messaging */
+
+{
+    port: 25,
+    protocol: "SMTP",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "Server-to-server email routing (unencrypted/plain)."
+},
+
+{
+    port: 80,
+    protocol: "HTTP",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "Unencrypted web traffic."
+},
+
+{
+    port: 110,
+    protocol: "POP3",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "Post Office Protocol v3; retrieves email from server to client."
+},
+
+{
+    port: 143,
+    protocol: "IMAP4",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "Internet Message Access Protocol; syncs email across devices."
+},
+
+{
+    port: 443,
+    protocol: "HTTPS",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "Secure web traffic via TLS/SSL encryption."
+},
+
+{
+    port: 465,
+    protocol: "SMTPS",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "Legacy SMTP over implicit SSL/TLS."
+},
+
+{
+    port: 587,
+    protocol: "SMTP Submission",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "Secure email client-to-server message submission (STARTTLS)."
+},
+
+{
+    port: 993,
+    protocol: "IMAPS",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "IMAP over SSL/TLS."
+},
+
+{
+    port: 995,
+    protocol: "POP3S",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "POP3 over SSL/TLS."
+},
+
+{
+    port: 8080,
+    protocol: "HTTP Proxy / Alt",
+    transport: "TCP",
+    category: "Web & Messaging",
+    description: "Alternate web port; common for development and proxies."
+},
+
+/* Core Infrastructure */
+
+{
+    port: 53,
+    protocol: "DNS",
+    transport: "UDP / TCP",
+    category: "Core Infrastructure & Name Resolution",
+    description: "Resolves domain names to IPs. UDP for queries; TCP commonly used for zone transfers and larger responses."
+},
+
+{
+    port: 67,
+    protocol: "DHCP (Server)",
+    transport: "UDP",
+    category: "Core Infrastructure & Name Resolution",
+    description: "Server listens for client IP address requests."
+},
+
+{
+    port: 68,
+    protocol: "DHCP (Client)",
+    transport: "UDP",
+    category: "Core Infrastructure & Name Resolution",
+    description: "Client receives IP assignment responses."
+},
+
+{
+    port: 123,
+    protocol: "NTP",
+    transport: "UDP",
+    category: "Core Infrastructure & Name Resolution",
+    description: "Network Time Protocol; synchronizes system clocks."
+},
+
+{
+    port: 161,
+    protocol: "SNMP (Queries)",
+    transport: "UDP",
+    category: "Core Infrastructure & Name Resolution",
+    description: "Simple Network Management Protocol for monitoring."
+},
+
+{
+    port: 162,
+    protocol: "SNMP (Traps)",
+    transport: "UDP",
+    category: "Core Infrastructure & Name Resolution",
+    description: "Receives unprompted alert traps from managed devices."
+},
+
+{
+    port: 179,
+    protocol: "BGP",
+    transport: "TCP",
+    category: "Core Infrastructure & Name Resolution",
+    description: "Border Gateway Protocol; internet core routing protocol."
+},
+
+/* Identity */
+
+{
+    port: 49,
+    protocol: "TACACS+",
+    transport: "TCP / UDP",
+    category: "Identity, Directory & Authentication",
+    description: "Cisco AAA authentication service."
+},
+
+{
+    port: 88,
+    protocol: "Kerberos",
+    transport: "TCP / UDP",
+    category: "Identity, Directory & Authentication",
+    description: "Windows Active Directory authentication ticket grantor."
+},
+
+{
+    port: 389,
+    protocol: "LDAP",
+    transport: "TCP / UDP",
+    category: "Identity, Directory & Authentication",
+    description: "Lightweight Directory Access Protocol; directory queries."
+},
+
+{
+    port: 636,
+    protocol: "LDAPS",
+    transport: "TCP / UDP",
+    category: "Identity, Directory & Authentication",
+    description: "LDAP over SSL/TLS."
+},
+
+{
+    port: 1812,
+    protocol: "RADIUS (Auth)",
+    transport: "UDP",
+    category: "Identity, Directory & Authentication",
+    description: "Remote Authentication Dial-In User Service authentication."
+},
+
+{
+    port: 1813,
+    protocol: "RADIUS (Acct)",
+    transport: "UDP",
+    category: "Identity, Directory & Authentication",
+    description: "RADIUS accounting and logging traffic."
+},
+
+/* Microsoft */
+
+{
+    port: 135,
+    protocol: "MS RPC EPMAP",
+    transport: "TCP / UDP",
+    category: "Microsoft Windows & Network Sharing",
+    description: "Microsoft Remote Procedure Call Endpoint Mapper."
+},
+
+{
+    port: 137,
+    protocol: "NetBIOS Name",
+    transport: "TCP / UDP",
+    category: "Microsoft Windows & Network Sharing",
+    description: "Resolves NetBIOS names on local legacy Windows networks."
+},
+
+{
+    port: 138,
+    protocol: "NetBIOS Datagram",
+    transport: "UDP",
+    category: "Microsoft Windows & Network Sharing",
+    description: "NetBIOS connectionless communication."
+},
+
+{
+    port: 139,
+    protocol: "NetBIOS Session",
+    transport: "TCP",
+    category: "Microsoft Windows & Network Sharing",
+    description: "NetBIOS session service for file/print sharing."
+},
+
+{
+    port: 445,
+    protocol: "SMB",
+    transport: "TCP",
+    category: "Microsoft Windows & Network Sharing",
+    description: "Server Message Block; direct modern Windows file sharing."
+},
+
+{
+    port: 3389,
+    protocol: "RDP",
+    transport: "TCP / UDP",
+    category: "Microsoft Windows & Network Sharing",
+    description: "Remote Desktop Protocol for graphical Windows administration."
+},
+
+/* VPN / Database */
+
+{
+    port: 500,
+    protocol: "IKE (IPsec)",
+    transport: "UDP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Internet Key Exchange for setting up IPsec VPN tunnels."
+},
+
+{
+    port: 1194,
+    protocol: "OpenVPN",
+    transport: "TCP / UDP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Default port commonly used for OpenVPN tunnels."
+},
+
+{
+    port: 1433,
+    protocol: "MS SQL",
+    transport: "TCP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Microsoft SQL Server database engine listener."
+},
+
+{
+    port: 1521,
+    protocol: "Oracle DB",
+    transport: "TCP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Oracle database default listener port."
+},
+
+{
+    port: 1701,
+    protocol: "L2TP",
+    transport: "UDP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Layer 2 Tunneling Protocol for VPN connections."
+},
+
+{
+    port: 1723,
+    protocol: "PPTP",
+    transport: "TCP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Point-to-Point Tunneling Protocol; legacy VPN."
+},
+
+{
+    port: 3306,
+    protocol: "MySQL",
+    transport: "TCP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Default MySQL database connection port."
+},
+
+{
+    port: 4500,
+    protocol: "IPsec NAT-T",
+    transport: "UDP",
+    category: "Remote Access, VPN & Database Services",
+    description: "IPsec NAT Traversal for VPNs through router NAT."
+},
+
+{
+    port: 5432,
+    protocol: "PostgreSQL",
+    transport: "TCP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Default PostgreSQL database server port."
+},
+
+{
+    port: 5900,
+    protocol: "VNC",
+    transport: "TCP",
+    category: "Remote Access, VPN & Database Services",
+    description: "Virtual Network Computing remote control software."
+},
+
+/* VoIP */
+
+{
+    port: 5060,
+    protocol: "SIP",
+    transport: "TCP / UDP",
+    category: "Voice over IP (VoIP) & Legacy Services",
+    description: "Session Initiation Protocol for setting up VoIP calls."
+},
+
+{
+    port: 5061,
+    protocol: "SIP (TLS)",
+    transport: "TCP",
+    category: "Voice over IP (VoIP) & Legacy Services",
+    description: "Encrypted Session Initiation Protocol traffic."
+},
+
+{
+    port: 548,
+    protocol: "AFP",
+    transport: "TCP",
+    category: "Voice over IP (VoIP) & Legacy Services",
+    description: "Apple Filing Protocol for legacy macOS file sharing."
+},
+
+{
+    port: 2049,
+    protocol: "NFS",
+    transport: "TCP / UDP",
+    category: "Voice over IP (VoIP) & Legacy Services",
+    description: "Network File System; common in Linux/Unix environments."
+}
+
+];
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let knownPorts =
+    JSON.parse(localStorage.getItem("knownPorts") || "[]");
+
+let currentCard = 0;
+let cardFlipped = false;
+
+let quizQuestions = [];
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    document.getElementById("totalPorts").textContent =
+        ports.length;
+
+    populateCategories();
+
+    renderTable();
+
+    setupFlashcard();
+
+    startQuiz();
+
+});
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+function showTab(tabName) {
+
+    document
+        .querySelectorAll("#reference, #flashcards, #quiz")
+        .forEach(section => section.classList.add("hidden"));
+
+    document
+        .getElementById(tabName)
+        .classList.remove("hidden");
+
+    document
+        .querySelectorAll(".tab")
+        .forEach(tab => tab.classList.remove("active"));
+
+    event.target.classList.add("active");
+
+    if (tabName === "quiz") {
+        startQuiz();
+    }
+}
+
+
+/* =========================================================
+   CATEGORIES
+========================================================= */
+
+function populateCategories() {
+
+    const select =
+        document.getElementById("categoryFilter");
+
+    const categories =
+        [...new Set(ports.map(p => p.category))];
+
+    categories.forEach(category => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = category;
+        option.textContent = category;
+
+        select.appendChild(option);
+
+    });
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+function renderTable() {
+
+    const search =
+        document
+            .getElementById("search")
+            .value
+            .toLowerCase();
+
+    const category =
+        document.getElementById("categoryFilter").value;
+
+    const transport =
+        document.getElementById("transportFilter").value;
+
+    const table =
+        document.getElementById("portTable");
+
+    table.innerHTML = "";
+
+    const filtered = ports.filter(p => {
+
+        const searchable =
+            `${p.port} ${p.protocol} ${p.transport} ${p.category} ${p.description}`
+            .toLowerCase();
+
+        const matchesSearch =
+            searchable.includes(search);
+
+        const matchesCategory =
+            category === "all" ||
+            p.category === category;
+
+        const matchesTransport =
+            transport === "all" ||
+            p.transport.includes(transport);
+
+        return (
+            matchesSearch &&
+            matchesCategory &&
+            matchesTransport
+        );
+
+    });
+
+    filtered.forEach(p => {
+
+        const tr =
+            document.createElement("tr");
+
+        if (knownPorts.includes(p.port)) {
+            tr.classList.add("known");
+        }
+
+        tr.innerHTML = `
+            <td class="port">${p.port}</td>
+
+            <td class="protocol">
+                ${p.protocol}
+            </td>
+
+            <td class="transport">
+                ${p.transport}
+            </td>
+
+            <td>
+                ${p.description}
+            </td>
+
+            <td>
+                <button
+                    class="mark-btn"
+                    onclick="toggleKnown(${p.port})">
+                    ${knownPorts.includes(p.port)
+                        ? "✓ Known"
+                        : "Mark Known"}
+                </button>
+            </td>
+        `;
+
+        table.appendChild(tr);
+
+    });
+
+    document.getElementById("visiblePorts").textContent =
+        filtered.length;
+
+    updateStats();
+}
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+function toggleKnown(port) {
+
+    if (knownPorts.includes(port)) {
+
+        knownPorts =
+            knownPorts.filter(p => p !== port);
+
+    } else {
+
+        knownPorts.push(port);
+
+    }
+
+    localStorage.setItem(
+        "knownPorts",
+        JSON.stringify(knownPorts)
+    );
+
+    renderTable();
+}
+
+
+function updateStats() {
+
+    document.getElementById("knownPorts").textContent =
+        knownPorts.length;
+
+    document.getElementById("remainingPorts").textContent =
+        ports.length - knownPorts.length;
+}
+
+
+function resetProgress() {
+
+    if (!confirm("Reset all known-port progress?")) {
+        return;
+    }
+
+    knownPorts = [];
+
+    localStorage.removeItem("knownPorts");
+
+    renderTable();
+}
+
+
+/* =========================================================
+   FILTERS
+========================================================= */
+
+function clearFilters() {
+
+    document.getElementById("search").value = "";
+
+    document.getElementById("categoryFilter").value =
+        "all";
+
+    document.getElementById("transportFilter").value =
+        "all";
+
+    renderTable();
+}
+
+
+/* =========================================================
+   FLASHCARDS
+========================================================= */
+
+function setupFlashcard() {
+
+    currentCard =
+        Math.floor(Math.random() * ports.length);
+
+    displayCard();
+
+}
+
+
+function displayCard() {
+
+    const p = ports[currentCard];
+
+    document.getElementById("cardPort").textContent =
+        p.port;
+
+    document.getElementById("cardAnswer").innerHTML = `
+        <strong>${p.protocol}</strong><br>
+        <span style="color:#fbbf24">${p.transport}</span><br><br>
+        ${p.description}
+    `;
+
+    document
+        .getElementById("cardAnswer")
+        .classList.toggle(
+            "hidden",
+            !cardFlipped
+        );
+
+    document.getElementById("cardHint").textContent =
+        cardFlipped
+            ? "Click the card to hide the answer"
+            : "Click the card to reveal the answer";
+
+    document.getElementById("cardCounter").textContent =
+        `Card ${currentCard + 1} of ${ports.length}`;
+
+}
+
+
+function flipCard() {
+
+    cardFlipped = !cardFlipped;
+
+    displayCard();
+
+}
+
+
+function nextCard() {
+
+    currentCard =
+        (currentCard + 1) % ports.length;
+
+    cardFlipped = false;
+
+    displayCard();
+
+}
+
+
+function previousCard() {
+
+    currentCard =
+        (currentCard - 1 + ports.length)
+        % ports.length;
+
+    cardFlipped = false;
+
+    displayCard();
+
+}
+
+
+function randomCard() {
+
+    currentCard =
+        Math.floor(Math.random() * ports.length);
+
+    cardFlipped = false;
+
+    displayCard();
+
+}
+
+
+/* =========================================================
+   QUIZ
+========================================================= */
+
+function startQuiz() {
+
+    quizQuestions =
+        [...ports]
+            .sort(() => Math.random() - 0.5);
+
+    quizIndex = 0;
+    quizScore = 0;
+
+    showQuestion();
+
+}
+
+
+function showQuestion() {
+
+    if (quizIndex >= quizQuestions.length) {
+
+        showQuizResults();
+
+        return;
+    }
+
+    quizAnswered = false;
+
+    const p =
+        quizQuestions[quizIndex];
+
+    document.getElementById("quizScore").textContent =
+        `Score: ${quizScore} / ${quizIndex}`;
+
+    document.getElementById("questionNumber").textContent =
+        `Question ${quizIndex + 1} of ${quizQuestions.length}`;
+
+    document.getElementById("question").textContent =
+        `Which service/protocol uses port ${p.port}?`;
+
+    const correct =
+        p.protocol;
+
+    const wrongAnswers =
+        ports
+            .filter(x => x.port !== p.port)
+            .sort(() => Math.random() - 0.5)
+            .slice(0, 3)
+            .map(x => x.protocol);
+
+    const answers =
+        [...wrongAnswers, correct]
+            .sort(() => Math.random() - 0.5);
+
+    const answerContainer =
+        document.getElementById("answers");
+
+    answerContainer.innerHTML = "";
+
+    answers.forEach(answer => {
+
+        const button =
+            document.createElement("button");
+
+        button.className = "answer";
+
+        button.textContent = answer;
+
+        button.onclick = () =>
+            selectAnswer(button, answer, correct);
+
+        answerContainer.appendChild(button);
+
+    });
+
+    document
+        .getElementById("nextQuestionBtn")
+        .classList.add("hidden");
+
+}
+
+
+function selectAnswer(button, answer, correct) {
+
+    if (quizAnswered) {
+        return;
+    }
+
+    quizAnswered = true;
+
+    const buttons =
+        document.querySelectorAll(".answer");
+
+    buttons.forEach(btn => {
+
+        if (btn.textContent === correct) {
+            btn.classList.add("correct");
+        }
+
+    });
+
+    if (answer === correct) {
+
+        button.classList.add("correct");
+
+        quizScore++;
+
+    } else {
+
+        button.classList.add("wrong");
+
+    }
+
+    document.getElementById("quizScore").textContent =
+        `Score: ${quizScore} / ${quizIndex + 1}`;
+
+    document
+        .getElementById("nextQuestionBtn")
+        .classList.remove("hidden");
+
+}
+
+
+function nextQuestion() {
+
+    quizIndex++;
+
+    showQuestion();
+
+}
+
+
+function showQuizResults() {
+
+    const percentage =
+        Math.round(
+            (quizScore / quizQuestions.length) * 100
+        );
+
+    document.getElementById("questionNumber").textContent =
+        "Quiz Complete";
+
+    document.getElementById("question").innerHTML = `
+        You scored <strong>${quizScore}</strong>
+        out of <strong>${quizQuestions.length}</strong>.
+        <br><br>
+        ${percentage}%
+    `;
+
+    document.getElementById("answers").innerHTML = "";
+
+    const button =
+        document.createElement("button");
+
+    button.className = "button";
+
+    button.textContent = "🔄 Retake Quiz";
+
+    button.onclick = startQuiz;
+
+    document
+        .getElementById("answers")
+        .appendChild(button);
+
+    document
+        .getElementById("nextQuestionBtn")
+        .classList.add("hidden");
+
+}
+
+
+/* =========================================================
+   KEYBOARD SHORTCUTS
+========================================================= */
+
+document.addEventListener("keydown", event => {
+
+    /*
+        Flashcards:
+        Space = flip
+        Right arrow = next
+        Left arrow = previous
+    */
+
+    const flashcardsVisible =
+        !document
+            .getElementById("flashcards")
+            .classList.contains("hidden");
+
+    if (flashcardsVisible) {
+
+        if (event.code === "Space") {
+
+            event.preventDefault();
+
+            flipCard();
+
+        }
+
+        if (event.key === "ArrowRight") {
+            nextCard();
+        }
+
+        if (event.key === "ArrowLeft") {
+            previousCard();
+        }
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
